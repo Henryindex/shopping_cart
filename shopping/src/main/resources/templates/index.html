@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>安心買電商商城 - 首頁</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f7; margin: 0; padding: 0; color: #333; }
+
+        /* 導覽列樣式 */
+        .navbar { background-color: #2c3e50; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .navbar .brand { font-size: 1.5em; font-weight: bold; text-decoration: none; color: white; }
+        .navbar .user-status { font-size: 0.9em; color: #bdc3c7; }
+
+        /* 主視覺區塊 */
+        .hero-section { text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #3498db, #2c3e50); color: white; }
+        .hero-section h1 { margin: 0 0 10px 0; font-size: 2.5em; }
+        .hero-section p { margin: 0; font-size: 1.2em; opacity: 0.9; }
+
+        /* 功能導向字卡區塊 */
+        .menu-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .menu-card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
+        .menu-card:hover { transform: translateY(-5px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+        .menu-card h3 { font-size: 1.5em; color: #2c3e50; margin-top: 0; }
+        .menu-card p { color: #7f8c8d; font-size: 0.95em; line-height: 1.5; margin-bottom: 25px; }
+
+        /* 通用按鈕樣式 */
+        .btn { display: inline-block; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; transition: background-color 0.2s; }
+        .btn-primary { background-color: #3498db; color: white; }
+        .btn-primary:hover { background-color: #2980b9; }
+        .btn-success { background-color: #2ecc71; color: white; }
+        .btn-success:hover { background-color: #27ae60; }
+        .btn-warning { background-color: #f1c40f; color: #333; }
+        .btn-warning:hover { background-color: #d4ac0d; }
+        .btn-logout { background-color: #e74c3c; color: white; padding: 5px 10px; font-size: 0.85em; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="brand" th:href="@{/}">安心買電商</a>
+
+    <div class="user-status">
+            <span th:if="${session.username != null}">
+                歡迎回來，<strong th:text="${session.username}" style="color: #2ecc71;">會員</strong>！
+                <a th:href="@{/login/logout}" class="btn btn-logout">登出</a>
+            </span>
+
+        <span th:if="${session.username == null && session.guestCartId != null}">
+                目前身份：<strong style="color: #f1c40f;">體驗訪客</strong>
+            </span>
+
+        <span th:if="${session.username == null && session.guestCartId == null}">
+                您好，歡迎光臨！
+            </span>
+    </div>
+</nav>
+
+<header class="hero-section">
+    <h1>探索驚喜，即刻啟航</h1>
+    <p>提供最優質的商品與最流暢的購物體驗</p>
+</header>
+
+<main class="menu-container">
+
+    <section class="menu-card">
+        <h3>🛒 瀏覽商品</h3>
+        <p>看看我們有哪些精選上架好物！從高階機械鍵盤到人體工學滑鼠，豐富庫存等你來發掘。</p>
+        <a th:href="@{/products}" class="btn btn-primary">前往商城列表</a>
+    </section>
+
+    <section class="menu-card">
+        <h3>🛍️ 我的購物車</h3>
+        <p>隨時檢查您的待結帳清單。我們支援訪客暫存功能，換算總金額一目了然。</p>
+        <a th:href="@{/cart/detail}" class="btn btn-success">查看購物車</a>
+    </section>
+
+    <section class="menu-card">
+        <h3>👤 會員中心</h3>
+
+        <div th:if="${session.username == null}">
+            <p>登入會員以享有專屬優惠，並能永久保存您的購物車清單，跨裝置同步不遺失。</p>
+            <a th:href="@{/login/login}" class="btn btn-warning">前往會員登入</a>
+        </div>
+
+        <div th:unless="${session.username == null}">
+            <p>您已成功登入！系統已鎖定您的專屬帳號。您可以自由選購商品，或隨時登出換帳號。</p>
+            <span class="btn" style="background-color: #bdc3c7; color: #7f8c8d; cursor: not-allowed;">您已登入</span>
+        </div>
+
+    </section>
+
+</main>
+
+</body>
+</html>

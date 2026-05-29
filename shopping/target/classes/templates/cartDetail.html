@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>我的購物車</title>
+  <style>
+    /* 全局與背景設定 */
+    body { font-family: sans-serif; background-color: #f4f6f7; padding: 20px; color: #333; margin: 0; }
+
+    /* === 新增：頂部導覽列樣式 === */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #34495e;
+        padding-bottom: 15px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    .header h1 { margin: 0; color: #2c3e50; border-bottom: none; padding-bottom: 0; }
+    .top-nav { display: flex; gap: 15px; }
+    .nav-btn {
+        text-decoration: none;
+        color: #34495e;
+        font-weight: bold;
+        padding: 8px 16px;
+        border: 1px solid #bdc3c7;
+        border-radius: 4px;
+        font-size: 0.9em;
+        transition: all 0.2s ease-in-out;
+    }
+    .nav-btn:hover {
+        background-color: #34495e;
+        color: white;
+        border-color: #34495e;
+    }
+
+    /* === 購物車主體樣式 === */
+    .cart-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+    /* 修正：將原本全域的 h1 改為只針對購物車區塊內的 h1 加底線 */
+    .cart-container h1 { border-bottom: 2px solid #ecf0f1; padding-bottom: 15px; margin-top: 0; }
+
+    table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+    th, td { padding: 15px; text-align: left; border-bottom: 1px solid #ecf0f1; }
+    th { background-color: #f9fbfc; color: #7f8c8d; font-weight: normal; }
+
+    /* 數量輸入框樣式 */
+    .qty-input { width: 60px; padding: 5px; text-align: center; }
+    .price { color: #e74c3c; font-weight: bold; }
+    .subtotal { color: #2980b9; font-weight: bold; }
+
+    /* 按鈕樣式 */
+    .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; font-size: 0.9em; }
+    .btn-update { background-color: #f1c40f; color: #333; }
+    .btn-delete { background-color: #e74c3c; color: white; }
+    .btn-checkout { background-color: #2ecc71; color: white; font-size: 1.2em; padding: 15px 30px; display: block; text-align: center; margin-top: 20px; }
+
+    .empty-cart { text-align: center; padding: 50px; color: #7f8c8d; }
+    .cart-summary { text-align: right; font-size: 1.2em; padding-top: 20px; border-top: 2px solid #ecf0f1; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>線上購物商城</h1>
+  <nav class="top-nav">
+    <a th:href="@{/}" class="nav-btn">🏠 返回首頁</a>
+    <a th:href="@{/cart}" class="nav-btn">🛒 前往購物車</a>
+    <a th:href="@{/login/login}" class="nav-btn">👤 前往登入</a>
+  </nav>
+</div>
+
+<div class="cart-container">
+  <h1>我的購物車</h1>
+
+  <div th:if="${cart == null or #lists.isEmpty(cart.items)}" class="empty-cart">
+    <img src="https://via.placeholder.com/150?text=Empty+Cart" alt="Empty Cart" style="opacity: 0.5; margin-bottom: 20px;">
+    <h2>您的購物車目前空空如也！</h2>
+    <p>趕快去挑選喜歡的商品吧。</p>
+    <a th:href="@{/products}" class="btn btn-update" style="display: inline-block; margin-top: 15px;">去逛逛</a>
+  </div>
+
+  <div th:unless="${cart == null or #lists.isEmpty(cart.items)}">
+    <table>
+      <thead>
+      <tr>
+        <th>商品名稱</th>
+        <th>單價</th>
+        <th>數量</th>
+        <th>小計</th>
+        <th>操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="item : ${cart.items}">
+
+        <td th:text="${item.name}">商品名稱</td>
+        <td class="price" th:text="${'$' + item.price}">$0</td>
+
+        <td>
+          <form th:action="@{/cart/update}" method="post" style="display:inline;">
+            <input type="hidden" name="productId" th:value="${item.productId}" />
+            <input type="number" name="quantity" class="qty-input"
+                   th:value="${item.quantity}" min="1" th:max="${item.stockQuantity}" />
+            <button type="submit" class="btn btn-update">更新</button>
+          </form>
+          <div th:if="${item.quantity > item.stockQuantity}" style="color:red; font-size: 12px; margin-top: 5px;">
+            庫存不足 (僅剩 [[${item.stockQuantity}]])
+          </div>
+        </td>
+
+        <td>
+          <form th:action="@{/cart/items/{id}(id=${item.productId})}" method="post">
+            <input type="hidden" name="_method" value="DELETE" />
+            <button type="submit" class="btn btn-delete" onclick="return confirm('確定要移除此商品嗎？');">刪除</button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div class="cart-summary">
+      總計金額： <span class="price" style="font-size: 1.5em;" th:text="${'$' + cart.totalAmount}">$0</span>
+    </div>
+
+    <form th:action="@{/order/checkpoint}" method="get">
+      <button type="submit" class="btn btn-checkout">前往結帳</button>
+    </form>
+  </div>
+
+</div>
+
+</body>
+</html>

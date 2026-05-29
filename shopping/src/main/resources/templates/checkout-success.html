@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>訂單完成 - 感謝您的購買</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f6f7; padding: 20px; color: #333; margin: 0; }
+
+        /* 頂部導覽列 */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #34495e; padding-bottom: 15px; padding-left: 20px; padding-right: 20px; }
+        .header h1 { margin: 0; color: #2c3e50; }
+        .top-nav { display: flex; gap: 15px; }
+        .nav-btn { text-decoration: none; color: #34495e; font-weight: bold; padding: 8px 16px; border: 1px solid #bdc3c7; border-radius: 4px; font-size: 0.9em; transition: all 0.2s ease-in-out; }
+        .nav-btn:hover { background-color: #34495e; color: white; border-color: #34495e; }
+
+        /* 訂單成功卡片 */
+        .success-container { max-width: 700px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
+
+        .success-icon { font-size: 4em; color: #2ecc71; margin-bottom: 10px; }
+        .order-number { font-size: 1.2em; color: #7f8c8d; margin-bottom: 30px; }
+        .order-number span { font-weight: bold; color: #2c3e50; }
+
+        /* 訂單明細表格 */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; text-align: left; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #ecf0f1; }
+        th { background-color: #f9fbfc; color: #7f8c8d; font-weight: normal; }
+        .price-col { text-align: right; }
+
+        /* 總金額區塊 */
+        .total-section { text-align: right; font-size: 1.3em; margin-bottom: 30px; padding-top: 15px; border-top: 2px solid #ecf0f1; }
+        .total-price { color: #e74c3c; font-weight: bold; font-size: 1.5em; }
+
+        /* 按鈕區塊 */
+        .actions { display: flex; justify-content: center; gap: 15px; }
+        .btn { padding: 12px 25px; border: none; border-radius: 4px; text-decoration: none; font-size: 1em; font-weight: bold; transition: background-color 0.2s; cursor: pointer; }
+        .btn-home { background-color: #bdc3c7; color: #333; }
+        .btn-home:hover { background-color: #95a5a6; }
+        .btn-orders { background-color: #3498db; color: white; }
+        .btn-orders:hover { background-color: #2980b9; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>線上購物商城</h1>
+    <nav class="top-nav">
+        <a th:href="@{/}" class="nav-btn">🏠 返回首頁</a>
+        <a th:href="@{/products}" class="nav-btn">🛍️ 繼續購物</a>
+    </nav>
+</div>
+
+<div class="success-container">
+    <div class="success-icon">🎉</div>
+    <h2 style="color: #2c3e50; margin-top: 0;">訂單建立成功！</h2>
+    <p class="order-number">訂單編號： <span th:text="${order.orderId}">ORD-20260528-001</span></p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>商品名稱</th>
+            <th style="text-align: center;">數量</th>
+            <th class="price-col">單價</th>
+            <th class="price-col">小計</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${order.items}">
+            <td th:text="${item.productName}">商品名稱</td>
+            <td style="text-align: center;" th:text="${item.quantity}">1</td>
+            <td class="price-col" th:text="${'$' + item.purchasePrice}">$0</td>
+            <td class="price-col" th:text="${'$' + (item.purchasePrice * item.quantity)}">$0</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="total-section">
+        實付總金額： <span class="total-price" th:text="${'$' + order.totalAmount}">$0</span>
+    </div>
+
+    <div class="actions">
+        <a th:href="@{/}" class="btn btn-home">返回首頁</a>
+        <a th:if="${session.userId != null}" th:href="@{/user/orders}" class="btn btn-orders">查看歷史訂單</a>
+    </div>
+</div>
+
+</body>
+</html>

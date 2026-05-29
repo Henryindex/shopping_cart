@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>會員中心 - 更新基本資料</title>
+  <style>
+    /* 全局與背景設定 */
+    body { font-family: sans-serif; background-color: #f4f6f7; padding: 20px; color: #333; margin: 0; }
+
+    /* 頂部導覽列 */
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 2px solid #34495e; padding-bottom: 15px; padding-left: 20px; padding-right: 20px; }
+    .header h1 { margin: 0; color: #2c3e50; }
+    .top-nav { display: flex; gap: 15px; }
+    .nav-btn { text-decoration: none; color: #34495e; font-weight: bold; padding: 8px 16px; border: 1px solid #bdc3c7; border-radius: 4px; font-size: 0.9em; transition: all 0.2s ease-in-out; }
+    .nav-btn:hover { background-color: #34495e; color: white; border-color: #34495e; }
+    .nav-btn-logout { border-color: #e74c3c; color: #e74c3c; }
+    .nav-btn-logout:hover { background-color: #e74c3c; color: white; }
+
+    /* 表單卡片 */
+    .profile-container { max-width: 500px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .profile-container h2 { text-align: center; color: #2c3e50; margin-top: 0; margin-bottom: 30px; border-bottom: 2px solid #ecf0f1; padding-bottom: 15px; }
+
+    /* 訊息區塊 (成功與失敗) */
+    .alert-error { background-color: #fdeaea; color: #e74c3c; padding: 15px; border-radius: 4px; margin-bottom: 25px; border: 1px solid #f5c6c6; font-weight: bold; text-align: center; }
+    .alert-success { background-color: #e8f8f5; color: #27ae60; padding: 15px; border-radius: 4px; margin-bottom: 25px; border: 1px solid #d1f2eb; font-weight: bold; text-align: center; }
+
+    /* 表單群組與輸入框 */
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #34495e; }
+    .form-group input { width: 100%; padding: 12px; font-size: 1em; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; transition: border-color 0.2s; }
+    .form-group input:focus { border-color: #3498db; outline: none; box-shadow: 0 0 5px rgba(52, 152, 219, 0.3); }
+
+    /* 唯讀欄位樣式 */
+    .form-group input[readonly] { background-color: #f8f9fa; color: #7f8c8d; cursor: not-allowed; border-color: #e0e0e0; }
+
+    /* 按鈕樣式 */
+    .btn-submit { width: 100%; background-color: #3498db; color: white; border: none; padding: 15px; font-size: 1.1em; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; margin-top: 10px; }
+    .btn-submit:hover { background-color: #2980b9; }
+
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>線上購物商城</h1>
+  <nav class="top-nav">
+    <a th:href="@{/}" class="nav-btn">🏠 返回首頁</a>
+    <a th:href="@{/cart}" class="nav-btn">🛒 我的購物車</a>
+    <a th:href="@{/user/orders}" class="nav-btn">📦 歷史訂單</a>
+    <a th:href="@{/user/logout}" class="nav-btn nav-btn-logout">登出</a>
+  </nav>
+</div>
+
+<div class="profile-container">
+  <h2>更新基本資料</h2>
+
+  <div th:if="${error != null}" class="alert-error">
+    ⚠️ <span th:text="${error}">錯誤訊息</span>
+  </div>
+  <div th:if="${success != null}" class="alert-success">
+    ✅ <span th:text="${success}">更新成功訊息</span>
+  </div>
+
+  <form th:action="@{/user/profile}" method="post">
+
+    <input type="hidden" name="_method" value="PUT"/>
+
+    <div class="form-group">
+      <label for="username">會員帳號 (不可修改)</label>
+      <input type="text" id="username" name="username" th:value="${user.username}" readonly />
+    </div>
+
+    <div class="form-group">
+      <label for="fullName">真實姓名</label>
+      <input type="text" id="fullName" name="name" th:value="${user.name}" required />
+    </div>
+
+    <div class="form-group">
+      <label for="email">電子信箱</label>
+      <input type="email" id="email" name="email" th:value="${user.email}" required />
+    </div>
+
+    <div class="form-group">
+      <label for="phone">手機號碼</label>
+      <input type="tel" id="phone" name="phone" pattern="09\d{8}" title="請輸入有效的手機號碼 (09開頭，共10碼)" th:value="${user.phone}" required />
+    </div>
+
+    <button type="submit" class="btn-submit">儲存修改</button>
+  </form>
+
+</div>
+
+</body>
+</html>
